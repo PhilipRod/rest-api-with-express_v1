@@ -21,6 +21,7 @@ const app = express();
   }
 })();
 
+app.use(express.json())
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
