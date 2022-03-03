@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Course.belongsTo(models.User,{
         foreignKey:{
-          fieldName:'userid',
+          fieldName:'userId',
           allowNull: false
         }
       })
