@@ -24,7 +24,15 @@ const authenticateUser = async (req,res,next)=>{
     }else{
         message = 'Auth header not found';
     }
-    next()
+    if (message) {
+    console.warn(message);
+    const error = new Error();
+    error.status = 401;
+    error.message = message;
+    next(error);
+  } else {
+    next();
+  }
 }
 
 module.exports = authenticateUser;
