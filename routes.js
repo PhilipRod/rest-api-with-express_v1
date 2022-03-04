@@ -23,9 +23,7 @@ router.post('/users', authenticateUser,asyncHandler(async (req,res)=>{
     try {
         await User.create(req.body)
         res.status(201)
-        .json({
-            message : "User successfully created"
-        }).setHeader('Location','/').end()
+        .location('/').end()
     } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError'){
             const errors = error.errors.map(err => err.message);
@@ -52,7 +50,7 @@ router.get('/courses',asyncHandler(async (req, res)=>{
 
 
 //route that will return the corresponding course including the User associated with that course
-router.get('/courses/:id',asyncHandler(async(req,res)=>{
+router.get('/courses/:id',asyncHandler(async(req,res,next)=>{
     const course = await Course.findByPk(req.params.id,{
        include : [
            {
@@ -61,7 +59,15 @@ router.get('/courses/:id',asyncHandler(async(req,res)=>{
            }
        ]
     })
-    res.json(course).status(200)
+    if(course){
+        res.json(course).status(200)
+    }else{
+        const error = new Error();
+            error.status = 404;
+            error.message = 'Course not found';
+            next(error);
+    }
+    
 }))
 
 //route that will create a new course, set the Location header to the URI for the newly created course
@@ -69,8 +75,7 @@ router.post('/courses',authenticateUser,asyncHandler(async (req,res)=>{
     try {
         const course = await Course.create(req.body)
         res.status(201)
-        .json(course)
-        .location(`courses/${course.id}`).end()
+        .location(`/courses/${course.id}`).end()
     } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError'){
             const errors = error.errors.map(err=>err.message)
@@ -111,7 +116,7 @@ router.delete('/courses/:id',authenticateUser,asyncHandler(async (req,res)=>{
         
     }else{
         res.status(404)
-        .json({error : {message:`Course wit id of ${req.params.id} not Found`}})
+        .json({error : {message:`Course with id of ${req.params.id} not Found`}})
     }
 }))
 

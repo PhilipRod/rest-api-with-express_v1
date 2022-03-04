@@ -11,6 +11,7 @@ const authenticateUser = async (req,res,next)=>{
         if (user){
             const authenticated = bcrypt.compareSync(credentials.pass, user.password)
             if(authenticated){
+                console.log(`Authentication successful for account: ${user.emailAddress}`);
                 req.currentUser = user;
             }else{
 
